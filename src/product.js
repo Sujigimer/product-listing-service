@@ -1,14 +1,17 @@
-const urlParams = new URLSearchParams(window.location.search);
-const productId = urlParams.get("id");
-const apiUrl = `https://fakestoreapi.com/products/${productId}`;
+const apiUrl = "https://fakestoreapi.com";
 
-const fetchProductDetails = async () => {
-  try {
-    const response = await fetch(apiUrl);
-    const product = await response.json();
+const urlParams = new URLSearchParams(window.location.search);
+const productId = parseInt(urlParams.get("id"));
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+const fetchProductDetails = () => {
+  const product = products.find((p) => p.id === productId);
+  if (product) {
     renderProductDetails(product);
-  } catch (error) {
-    console.error(error);
+  } else {
+    const productDetails = document.getElementById("product-details");
+    productDetails.innerHTML = "<p>Product not found.</p>";
   }
 };
 
@@ -16,12 +19,14 @@ const renderProductDetails = (product) => {
   const productDetails = document.getElementById("product-details");
 
   productDetails.innerHTML = `
-    <img src="${product.image}" alt="${product.title}" />
-    <h1>${product.title}</h1>
-    <p>Price: $${product.price}</p>
-    <p>${product.description}</p>
-    <p>Category: ${product.category}</p>
-    <button id="delete-product-btn">Delete Product</button>
+    <div class="product-detail-card">
+      <img src="${product.image}" alt="${product.title}" />
+      <h1>${product.title}</h1>
+      <p>Price: $${product.price.toFixed(2)}</p>
+      <p>${product.description}</p>
+      <p>Category: ${product.category}</p>
+      <button id="delete-product-btn">Delete Product</button>
+    </div>
   `;
 
   document
@@ -29,24 +34,28 @@ const renderProductDetails = (product) => {
     .addEventListener("click", deleteProduct);
 };
 
-const deleteProduct = async () => {
-  try {
-    await fetch(apiUrl, { method: "DELETE" });
-    showPopup("Product has been deleted.");
-  } catch (error) {
-    console.error(error);
-  }
+const deleteProduct = () => {
+  products = products.filter((product) => product.id !== productId);
+
+  localStorage.setItem("products", JSON.stringify(products));
+
+  showPopup("Product has been deleted.");
 };
 
 const showPopup = (message) => {
   const popup = document.getElementById("popup");
   document.getElementById("popup-message").innerText = message;
   popup.classList.remove("hidden");
+  popup.classList.add("show");
 };
 
-document.getElementById("close-popup-btn").addEventListener("click", () => {
-  document.getElementById("popup").classList.add("hidden");
+const hidePopup = () => {
+  const popup = document.getElementById("popup");
+  popup.classList.remove("show");
+  popup.classList.add("hidden");
   window.location.href = "index.html";
-});
+};
+
+document.getElementById("close-popup-btn").addEventListener("click", hidePopup);
 
 fetchProductDetails();

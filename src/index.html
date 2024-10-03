@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Product Listing Service</title>
+    <link rel="stylesheet" href="bootstrap.min.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -10,12 +11,14 @@
       <button id="add-product-btn">Add New Product</button>
       <button id="restore-products-btn">Restore Deleted Products</button>
     </header>
-    <main id="product-list"></main>
+    <main id="product-list" class="product-list"></main>
 
     <!-- Popup langas -->
-    <div id="popup" class="hidden">
-      <p id="popup-message"></p>
-      <button id="close-popup-btn">Close</button>
+    <div id="popup" class="popup hidden">
+      <div class="popup-content">
+        <p id="popup-message"></p>
+        <button id="close-popup-btn">Close</button>
+      </div>
     </div>
 
     <script src="app.js"></script>
